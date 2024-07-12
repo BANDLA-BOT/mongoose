@@ -1,23 +1,94 @@
 "use strict";
 
-var express = require('express');
+var express = require("express");
 
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 
-var cors = require('cors');
+var cors = require("cors"); // const User = require('./models/todos/user.models.js')
+// const Orders = require('./models/ecommerce/order.models.js')
 
-var User = require('./models/todos/user.models.js');
 
-var Orders = require('./models/ecommerce/order.models.js');
+var User = require("./models/users/user.js");
 
-mongoose.connect('mongodb://localhost:27017/DataModelling').then(function () {
-  console.log('Database connected');
+var Product = require("./models/products/product.js");
+
+mongoose.connect("mongodb://localhost:27017/DataModelling").then(function () {
+  console.log("Database connected");
 })["catch"](function (error) {
   console.log(error.message);
 });
 var app = express();
 app.use(express.json());
-app.use(cors()); // app.post('/', async(req,res)=>{
+app.use(cors());
+app.post("/createprod", function _callee(req, res) {
+  var newProduct;
+  return regeneratorRuntime.async(function _callee$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          _context.prev = 0;
+          newProduct = new Product({
+            title: req.body.title,
+            description: req.body.description,
+            rating: req.body.rating,
+            price: req.body.price
+          });
+          _context.next = 4;
+          return regeneratorRuntime.awrap(newProduct.save());
+
+        case 4:
+          res.json({
+            Product: newProduct
+          });
+          _context.next = 10;
+          break;
+
+        case 7:
+          _context.prev = 7;
+          _context.t0 = _context["catch"](0);
+          res.status(500).json(_context.t0.message);
+
+        case 10:
+        case "end":
+          return _context.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
+});
+app.post("/createuser", function _callee2(req, res) {
+  var newUser;
+  return regeneratorRuntime.async(function _callee2$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.prev = 0;
+          newUser = new User({
+            name: req.body.name,
+            email: req.body.email,
+            phno: req.body.phno
+          });
+          _context2.next = 4;
+          return regeneratorRuntime.awrap(newUser.save());
+
+        case 4:
+          res.json({
+            user: newUser
+          });
+          _context2.next = 10;
+          break;
+
+        case 7:
+          _context2.prev = 7;
+          _context2.t0 = _context2["catch"](0);
+          res.status(500).json(_context2.t0.message);
+
+        case 10:
+        case "end":
+          return _context2.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
+}); // app.post('/', async(req,res)=>{
 //     try {
 // const iterations = 10
 // for(let i=0; i<=5;i++){
@@ -49,164 +120,121 @@ app.use(cors()); // app.post('/', async(req,res)=>{
 //         res.json({message:error.message})
 //     }
 // })
+// app.post('/', async(req,res)=>{
+//     try {
+//         const orderDetails = new Orders({
+//             orderPrice:req.body.orderPrice,
+//             address:req.body.address,
+//             // status:req.body.status,
+//         })
+//         // orderDetails.customer.push(customerId)
+//         await orderDetails.save()
+//         res.json({message:"Order created", order:orderDetails})
+//     } catch (error) {
+//         res.status(500).json({message:"Internal server error", error:error.message})
+//     }
+// })
+// app.put('/put/:id/:customerId', async(req,res)=>{
+//     try {
+//         const {id, customerId} = req.params
+//         const order = await Orders.findOneAndUpdate({_id:id},{$push:{customer:req.params.customerId}})
+//         res.json({message:"ADDED"})
+//     } catch (error) {
+//         res.json({message:"Internal server Error", error:error.message})
+//     }
+// })
+// app.get('/orders', async(req,res)=>{
+//     try {
+//         const orders = await Orders.find().populate('customer')
+//         res.json({orders:orders})
+//     } catch (error) {
+//     }
+// })
+// app.get('/aggr', async(req,res)=>{
+//     try {
+// const aggregate = await Orders.aggregate([
+//     {$match:{orderPrice:{$gt:1000}}},
+//     {$group:{
+//         _id:null,
+//         avgPrice:{$avg:'$orderPrice'},
+//         minPrice:{$min:'$orderPrice'},
+//         maxPrice:{$max:'$orderPrice'},
+//         totalPrice:{$sum:'$orderPrice'},
+//         orderCount:{$sum:1}
+//     }},
+//     {$sort:{minPrice:1}},
+//     {$match:{maxPrice:{$lt:10000}}}
+// ])
+// const aggregate = await Orders.aggregate([
+//     {$unwind:'$customer'},
+//     {$group:{
+//         _id:"$customer",
+//         AllCustomers:{$sum:1},
+//         orderDetails:{$push:'$orderPrice'}
+//     }},
+//     // {$addFields:{billerAddress:"$address"}}
+//     {$project:{
+//         _id:1,
+//         AllCustomers:1,
+//         orderDetails:1
+//     }},
+//     {$sort:{_id:1}},
+//     {$limit:6}
+// ])
+// res.json({message:aggregate, count:aggregate.length})
+//     } catch (error) {
+//     }
+// })
+// app.get('/get', async(req,res)=>{
+//    try {
+// const user = await User.find().where('username').eq('guruprasad')
+// if(!user){
+//     throw new Error("Error while fetching or No users available")
+// }
+// else{
+//     return res.json({message:"User fetched",user:user})
+// }
+// const {username} = req.body
+// const doc = await User.replaceOne({username:username}, {password:"12345667888"})
+// res.json({User:doc})
+// const query = User.findOne({username:"guruprasad"})
+// query.select('username')
+// const person = await query.exec();
+// console.log(person.username)
+// res.json({email:person})
+// const user = await User.find({_id:'668faba9f10aecaccf501ea7'})
+//                         .where("lastName")
+//                         .eq('Prasad')
+//                         .where("height").gt(2).lt(10)
+// const user = await User.find().sort({firstName:1})
+// const user = await User.find().limit(1).select('-password -email')
+// for await(const doc of User.find()){
+//     res.json({message:"Queried", user:doc})
+// }
+// res.json({message:"Queried", user:user})
+//    } catch (error) {
+//     res.json({message:"Internal server error", error:error.message})
+//    }
+// })
+// app.all('*', (req,res,next)=>{
+//     // res.status(404).json({
+//     //     status:'fail',
+//     //     message:`Can't find ${req.originalUrl} on the server`
+//     // })
+//     const err = new Error(`Can't find ${req.originalUrl} on the server`)
+//     err.status = 'fail',
+//     err.statusCode = 404
+//     next(err)
+// })
+// app.use((error, req,res, next)=>{
+//     error.statusCode = error.statusCode || 500;
+//     error.status = error.status || 'error'
+//     res.status(error.statusCode).json({
+//         status:error.statusCode,
+//         message:error.message
+//     })
+// })
 
-app.post('/', function _callee(req, res) {
-  var orderDetails;
-  return regeneratorRuntime.async(function _callee$(_context) {
-    while (1) {
-      switch (_context.prev = _context.next) {
-        case 0:
-          _context.prev = 0;
-          orderDetails = new Orders({
-            orderPrice: req.body.orderPrice,
-            address: req.body.address // status:req.body.status,
-
-          }); // orderDetails.customer.push(customerId)
-
-          _context.next = 4;
-          return regeneratorRuntime.awrap(orderDetails.save());
-
-        case 4:
-          res.json({
-            message: "Order created",
-            order: orderDetails
-          });
-          _context.next = 10;
-          break;
-
-        case 7:
-          _context.prev = 7;
-          _context.t0 = _context["catch"](0);
-          res.status(500).json({
-            message: "Internal server error",
-            error: _context.t0.message
-          });
-
-        case 10:
-        case "end":
-          return _context.stop();
-      }
-    }
-  }, null, null, [[0, 7]]);
-});
-app.put('/put/:id/:customerId', function _callee2(req, res) {
-  var _req$params, id, customerId, order;
-
-  return regeneratorRuntime.async(function _callee2$(_context2) {
-    while (1) {
-      switch (_context2.prev = _context2.next) {
-        case 0:
-          _context2.prev = 0;
-          _req$params = req.params, id = _req$params.id, customerId = _req$params.customerId;
-          _context2.next = 4;
-          return regeneratorRuntime.awrap(Orders.findOneAndUpdate({
-            _id: id
-          }, {
-            $push: {
-              customer: req.params.customerId
-            }
-          }));
-
-        case 4:
-          order = _context2.sent;
-          res.json({
-            message: "ADDED"
-          });
-          _context2.next = 11;
-          break;
-
-        case 8:
-          _context2.prev = 8;
-          _context2.t0 = _context2["catch"](0);
-          res.json({
-            message: "Internal server Error",
-            error: _context2.t0.message
-          });
-
-        case 11:
-        case "end":
-          return _context2.stop();
-      }
-    }
-  }, null, null, [[0, 8]]);
-});
-app.get('/orders', function _callee3(req, res) {
-  var orders;
-  return regeneratorRuntime.async(function _callee3$(_context3) {
-    while (1) {
-      switch (_context3.prev = _context3.next) {
-        case 0:
-          _context3.prev = 0;
-          _context3.next = 3;
-          return regeneratorRuntime.awrap(Orders.find().populate('customer'));
-
-        case 3:
-          orders = _context3.sent;
-          res.json({
-            orders: orders
-          });
-          _context3.next = 9;
-          break;
-
-        case 7:
-          _context3.prev = 7;
-          _context3.t0 = _context3["catch"](0);
-
-        case 9:
-        case "end":
-          return _context3.stop();
-      }
-    }
-  }, null, null, [[0, 7]]);
-});
-app.get('/get', function _callee4(req, res) {
-  return regeneratorRuntime.async(function _callee4$(_context4) {
-    while (1) {
-      switch (_context4.prev = _context4.next) {
-        case 0:
-          try {
-            // const user = await User.find().where('username').eq('guruprasad')
-            // if(!user){
-            //     throw new Error("Error while fetching or No users available")
-            // }
-            // else{
-            //     return res.json({message:"User fetched",user:user})
-            // }
-            // const {username} = req.body
-            // const doc = await User.replaceOne({username:username}, {password:"12345667888"})
-            // res.json({User:doc})
-            // const query = User.findOne({username:"guruprasad"})
-            // query.select('username')
-            // const person = await query.exec();
-            // console.log(person.username)
-            // res.json({email:person})
-            // const user = await User.find({_id:'668faba9f10aecaccf501ea7'})
-            //                         .where("lastName")
-            //                         .eq('Prasad')
-            //                         .where("height").gt(2).lt(10)
-            // const user = await User.find().sort({firstName:1})
-            // const user = await User.find().limit(1).select('-password -email')
-            // for await(const doc of User.find()){
-            //     res.json({message:"Queried", user:doc})
-            // }
-            res.json({
-              message: "Queried",
-              user: user
-            });
-          } catch (error) {
-            res.json({
-              message: "Internal server error",
-              error: error.message
-            });
-          }
-
-        case 1:
-        case "end":
-          return _context4.stop();
-      }
-    }
-  });
-});
 app.listen(8000, function () {
   console.log("Running");
 });
